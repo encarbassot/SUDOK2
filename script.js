@@ -5,10 +5,15 @@ import Sudoku from "./sudoku.js"
 const divCv = document.querySelector(".canvas")
 const numBtns = document.querySelectorAll(".actions button.num-btn") 
 const btnFullScreen = document.querySelector(".actions button#fullScreen") 
-
+const timerSpan = document.getElementById("timer")
+const errorSoan = document.getElementById("errorCount")
 
 let sudoku = null
 let numSelected = null
+
+let startTimestamp = null
+let intervalId
+
 const M = 3 // SUDOKU SPECIAL NUMBER
 const N = M*M // 9
 const W = Math.min(window.innerWidth-6,600) //Width
@@ -43,8 +48,16 @@ cv.mouseClicked = function (e,mouseX,mouseY){
     const col = Math.floor(mouseX/W*N)
     const row = Math.floor(mouseY/W*N)
     console.log("CLICK",col,row)
-    const {selectedNum} = sudoku.click(col,row,numSelected)
+    const {
+        selectedNum,
+        errors
+    } = sudoku.click(col,row,numSelected)
 
+    errorSoan.innerText = errors
+    if(!startTimestamp){
+        startTimestamp = sudoku.startTimestamp
+        startTimer()
+    }
     selectNum(selectedNum)
     
 }
@@ -54,6 +67,18 @@ cv.start()
 
 
 
+function startTimer(){
+  if(intervalId) return
+  intervalId = setInterval(() => {
+    if(!startTimestamp) return
+    const elapsed = Date.now() - startTimestamp
+    const seconds = Math.floor(elapsed / 1000) % 60
+    const minutes = Math.floor(elapsed / 60000) % 60
+    const hours = Math.floor(elapsed / 3600000)
+    timerSpan.innerText = 
+      `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`
+  },1000)
+}
 
 
 async function fetchSudoku(){

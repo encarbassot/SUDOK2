@@ -1,41 +1,42 @@
-
-
-html,body{
+html,
+body {
     height: 100dvh;
     width: 100vw;
-    margin:0;
+    margin: 0;
     overflow: hidden;
 }
-.app{
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-  height: 100dvh;
+
+.app {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    height: 100dvh;
 }
 
-canvas{
+canvas {
     border: 3px solid black;
 }
 
-.actions{
+.actions {
     width: 100%;
 
 }
 
-.actions{
+.actions {
     display: flex;
     justify-content: space-evenly;
     max-width: 600px;
+    width: 100%;
 }
 
-.actions button{
+.actions button {
     flex: 1;
     aspect-ratio: 1;
 
+
     background-color: white;
     border-radius: 10px;
-    height: 100%;   
 
     display: flex;
     align-items: center;
@@ -46,13 +47,37 @@ canvas{
     cursor: pointer;
 }
 
-.actions button svg{
+.actions button svg {
     width: 100%;
 }
 
 
-.actions button.active{
+.actions button.active {
     background-color: black;
     color: white;
 }
 
+
+
+.header {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    justify-content: space-between;
+}
+
+
+.header>div {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.header>div svg {
+    width: 20px;
+    height: 20px;
+}
+
+.header .errors {
+    color: #dc2626;
+}
