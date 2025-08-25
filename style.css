@@ -9,9 +9,10 @@ body {
 .app {
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: space-between;
     align-items: center;
-    height: 100dvh;
+    height: 100%;
+    max-height: 950px;
 }
 
 canvas {
@@ -24,9 +25,9 @@ canvas {
     /* gap: 8px;         */
     max-width: 600px;
     width: 100%;
-  }
-  
-  .actions button {
+}
+
+.actions button {
     aspect-ratio: 1 / 1;
     background-color: white;
     border-radius: 10px;
@@ -36,35 +37,37 @@ canvas {
     font-size: clamp(14px, 5vw, 24px);
     cursor: pointer;
     border: 1px solid black;
-  }
-  
-  .actions button svg {
+}
+
+.actions button svg {
     width: 70%;
     height: 70%;
-  }
-  
-  .actions button.active {
+}
+
+.actions button.active {
     background-color: black;
     color: white;
-  }
+}
 
-  .actions button.num-btn{
+.actions button.num-btn {
     position: relative;
-  }
-  .actions button.num-btn .num{
+}
+
+.actions button.num-btn .num {
     width: 100%;
     height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-  .actions button.num-btn .count{
+}
+
+.actions button.num-btn .count {
     position: absolute;
     top: 2px;
     right: 4px;
     font-size: 0.4em;
     color: gray;
-  }
+}
 
 
 
@@ -89,4 +92,52 @@ canvas {
 
 .header .errors {
     color: #dc2626;
+}
+
+
+
+
+
+/* -------------- MODAL ------------- */
+.modal-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    padding: 50px;
+    box-sizing: border-box;
+}
+
+.showSettings .modal-bg {
+    display: flex;
+}
+
+.modal {
+    display: flelx;
+    flex-direction: column;
+    background-color: white;
+    border-radius: 10px;
+    width: 100%;
+    height: 100%;
+    border: 3px solid black;
+    padding: 1rem;
+}
+
+.modal header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+
+    button {
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        font-size: 50px;
+    }
 }

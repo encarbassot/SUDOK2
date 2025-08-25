@@ -5,6 +5,9 @@ export default class Sudoku {
     this.initial = board.map(row => [...row])
     this.board = board.map(row => [...row])
     this.solution = solution.map(row => [...row])
+    this.subNumbers = board.map(row => row.map(_=>[])) //for pencil marks
+
+    this.isEditingSubnumber = false
 
     this.hasStarted = false
     this.startTimestamp = null
@@ -44,6 +47,7 @@ export default class Sudoku {
       //columns
       for(let j=0; j<row.length; j++){
         const n = row[j]
+        const subNumbers = this.subNumbers[i][j]
         const isOriginal = n === this.initial[i][j]
         const isHover = this.hover && hoverX === j && hoverY === i 
         const isColSelected = this.selected?.x === j
@@ -85,7 +89,7 @@ export default class Sudoku {
           cv.stroke("#000")
         }
         
-        if(n===0) continue
+        if(n===0 && subNumbers.length === 0) continue
 
 
         //color del texto
@@ -102,12 +106,29 @@ export default class Sudoku {
 
         //TEXT
         cv.fill(textFill)
-        cv.text(
-          n,
-          x+ this.W/this.N*0.3, //compensate text center
-          y+ this.W/this.N*0.75,
-          this.W/10
-        )
+        if (n===0) {
+          const subSize = this.W / 30
+          const offset = w / 3 // cada mini-celda dentro del cuadrado
+        
+          for (let num = 1; num <= 9; num++) {
+            if (subNumbers.includes(num)) {
+              const subRow = Math.floor((num - 1) / 3) // 0..2
+              const subCol = (num - 1) % 3             // 0..2
+              const subX = x + subCol * offset + offset * 0.3
+              const subY = y + subRow * offset + offset * 0.8
+        
+              cv.text(num, subX, subY, subSize)
+            }
+          }
+        } else {
+          cv.text(
+            n,
+            x + w * 0.3, // compensar centrado
+            y + w * 0.75,
+            this.W / 10
+          )
+        }
+        
       }   
     }
 
@@ -157,6 +178,7 @@ export default class Sudoku {
 
   }
 
+
   setHover(col,row){
     this.hover = {x:col,y:row}
   }
@@ -168,7 +190,8 @@ export default class Sudoku {
 
   click(col,row,n){
     let selectedBtn = null
-    
+
+    //begin game
     if(!this.hasStarted){
       this.start()
       return{
@@ -178,8 +201,10 @@ export default class Sudoku {
       }
     }
 
+    //reset error mark
     if(this.error) this.error = null
 
+    //make hover and selection
     this.hover = {x:col,y:row}
     if(this.selected?.x === col && this.selected?.y === row){
       this.selected = null
@@ -187,18 +212,45 @@ export default class Sudoku {
       this.selected =  {x:col,y:row}
     }
 
+
     if(n){
-      const isEditable = this.initial[row][col] === 0
-      if(isEditable){
-        const isCorrect = n === this.solution[row][col]
-        if(isCorrect){
-          this.board[row][col] = n
+
+      //añadir pencilmarks
+      if(this.isEditingSubnumber){
+        const subNumbers = this.subNumbers[row][col]
+        const index = subNumbers.indexOf(n)
+        if(index === -1){
+          const check = isValidSudokuMove(this.board,n,row,col)
+          console.log("CHECK",check)
+          if(!check.valid){
+            this.error={x:check.col,y:check.row}
+            this.errors ++
+          }else{
+            subNumbers.push(n)
+            subNumbers.sort()
+          }
         }else{
-          this.error={x:col,y:row}
-          this.errors ++
+          subNumbers.splice(index,1)
+        }
+        selectedBtn = n
+      }else{
+        const isEditable = this.initial[row][col] === 0
+        if(isEditable){
+          const isCorrect = n === this.solution[row][col]
+          if(isCorrect){
+            this.board[row][col] = n
+            this.removePencilMarks(n,row,col)
+          }else{
+            this.error={x:col,y:row}
+            this.errors ++
+          }
         }
       }
+
+
     }
+
+    
 
 
     return {
@@ -214,11 +266,11 @@ export default class Sudoku {
 
   getCounts() {
     const counts = {}
-    for (let n = 1; n <= 9; n++) counts[n] = 0
+    for (let n = 1; n <= this.N; n++) counts[n] = 0
 
     for (let row of this.board) {
       for (let cell of row) {
-        if (cell >= 1 && cell <= 9) {
+        if (cell >= 1 && cell <= this.N) {
           counts[cell]++
         }
       }
@@ -227,5 +279,98 @@ export default class Sudoku {
     return counts
   }
 
+
+
+  toggleShowNumbers(){
+    this.isEditingSubnumber = !this.isEditingSubnumber
+    return this.isEditingSubnumber
+  }
+
+
+
+
+
+
+
+
+
+  removePencilMarks(n, row, col) {
+    // eliminar en fila
+    for (let c = 0; c < this.N; c++) {
+      const sub = this.subNumbers[row][c]
+      const idx = sub.indexOf(n)
+      if (idx !== -1) sub.splice(idx, 1)
+    }
+  
+    // eliminar en columna
+    for (let r = 0; r < this.N; r++) {
+      const sub = this.subNumbers[r][col]
+      const idx = sub.indexOf(n)
+      if (idx !== -1) sub.splice(idx, 1)
+    }
+  
+    // eliminar en la caja 3x3
+    const boxRow = Math.floor(row / 3) * 3
+    const boxCol = Math.floor(col / 3) * 3
+    for (let r = boxRow; r < boxRow + 3; r++) {
+      for (let c = boxCol; c < boxCol + 3; c++) {
+        const sub = this.subNumbers[r][c]
+        const idx = sub.indexOf(n)
+        if (idx !== -1) sub.splice(idx, 1)
+      }
+    }
+  }
+  
     
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function isValidSudokuMove(board, n, row, col) {
+  if (n === 0) return { valid: true } // 0 siempre se puede poner
+  
+  // check row
+  for (let c = 0; c < 9; c++) {
+    if (board[row][c] === n) {
+      return { valid: false, row, col: c }
+    }
+  }
+
+  // check col
+  for (let r = 0; r < 9; r++) {
+    if (board[r][col] === n) {
+      return { valid: false, row: r, col }
+    }
+  }
+
+  // check 3x3 box
+  const startRow = Math.floor(row / 3) * 3
+  const startCol = Math.floor(col / 3) * 3
+  for (let r = 0; r < 3; r++) {
+    for (let c = 0; c < 3; c++) {
+      const rr = startRow + r
+      const cc = startCol + c
+      if (board[rr][cc] === n) {
+        return { valid: false, row: rr, col: cc }
+      }
+    }
+  }
+
+  return { valid: true }
 }

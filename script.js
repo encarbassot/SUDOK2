@@ -6,7 +6,11 @@ const divCv = document.querySelector(".canvas")
 const numBtns = document.querySelectorAll(".actions button.num-btn") 
 const btnFullScreen = document.querySelector(".actions button#fullScreen") 
 const timerSpan = document.getElementById("timer")
-const errorSoan = document.getElementById("errorCount")
+const errorSpan = document.getElementById("errorCount")
+const subNumBtn = document.getElementById("subNumbers")
+const difficultySpan = document.getElementById("difficulty")
+const settingsBtn = document.getElementById("settingsBtn")
+const closeSettings = document.getElementById("closeSettings")
 
 let sudoku = null
 let numSelected = null
@@ -47,14 +51,13 @@ cv.mouseMoved = function (e,mouseX,mouseY){
 cv.mouseClicked = function (e,mouseX,mouseY){
     const col = Math.floor(mouseX/W*N)
     const row = Math.floor(mouseY/W*N)
-    console.log("CLICK",col,row)
     const {
         selectedNum,
         errors,
         counts,
     } = sudoku.click(col,row,numSelected)
 
-    errorSoan.innerText = errors
+    errorSpan.innerText = errors
     if(!startTimestamp){
         startTimestamp = sudoku.startTimestamp
         startTimer()
@@ -91,11 +94,12 @@ async function fetchSudoku(){
     const response = await fetch(api)
     const data = await response.json()
 
+    console.log(data)
     // console.log(data)
-    const {value, solution} = data.newboard.grids[0]
+    const {value, solution,difficulty} = data.newboard.grids[0]
 
     sudoku = new Sudoku(value, solution,N,M,W)
-
+    difficultySpan.innerText = difficulty
     // console.log(sudoku.solution)
 }
 
@@ -141,6 +145,20 @@ btnFullScreen.addEventListener("click", () => {
   }
 })
 
+
+subNumBtn.addEventListener("click",()=>{
+    const state = sudoku.toggleShowNumbers()
+    subNumBtn.classList.toggle("active",state)
+})
+
+
+//settings modal
+settingsBtn.addEventListener("click",()=>{
+    document.body.classList.add("showSettings")
+})
+closeSettings.addEventListener("click",()=>{
+    document.body.classList.remove("showSettings")
+})
 
 // -------- BUTTONS COUNTERS --------
 function updateCount(n, k) {
