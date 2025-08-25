@@ -173,7 +173,8 @@ export default class Sudoku {
       this.start()
       return{
         selectedBtn,
-        errors:this.errors
+        errors:this.errors,
+        counts:this.getCounts()
       }
     }
 
@@ -202,10 +203,29 @@ export default class Sudoku {
 
     return {
       selectedBtn,
-      errors:this.errors
+      errors:this.errors,
+      counts:this.getCounts()
     }
   }
 
+
+
+
+
+  getCounts() {
+    const counts = {}
+    for (let n = 1; n <= 9; n++) counts[n] = 0
+
+    for (let row of this.board) {
+      for (let cell of row) {
+        if (cell >= 1 && cell <= 9) {
+          counts[cell]++
+        }
+      }
+    }
+
+    return counts
+  }
 
     
 }

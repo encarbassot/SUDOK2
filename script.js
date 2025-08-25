@@ -50,7 +50,8 @@ cv.mouseClicked = function (e,mouseX,mouseY){
     console.log("CLICK",col,row)
     const {
         selectedNum,
-        errors
+        errors,
+        counts,
     } = sudoku.click(col,row,numSelected)
 
     errorSoan.innerText = errors
@@ -59,6 +60,8 @@ cv.mouseClicked = function (e,mouseX,mouseY){
         startTimer()
     }
     selectNum(selectedNum)
+
+    renderCounts(counts)
     
 }
 
@@ -97,6 +100,11 @@ async function fetchSudoku(){
 }
 
 
+function renderCounts(counts){
+    Object.entries(counts).forEach(([n,k])=>{
+        updateCount(Number(n),k)
+    })
+}
 
 
 function selectNum(n){
@@ -132,3 +140,17 @@ btnFullScreen.addEventListener("click", () => {
     document.exitFullscreen()
   }
 })
+
+
+// -------- BUTTONS COUNTERS --------
+function updateCount(n, k) {
+    const buttons = document.querySelectorAll(".num-btn")
+    const btn = buttons[n - 1] // porque buttonIndex = n-1
+    if (!btn) return
+  
+    const countSpan = btn.querySelector(".count")
+    if (countSpan) {
+      countSpan.textContent = k
+    }
+  }
+  
