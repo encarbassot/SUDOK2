@@ -94,7 +94,9 @@ canvas {
     color: #dc2626;
 }
 
-
+.canvas {
+    background-color: black;
+}
 
 
 
