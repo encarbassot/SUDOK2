@@ -108,7 +108,7 @@ canvas {
     width: 100%;
     height: 100%;
     backdrop-filter: blur(4px);
-    display: none;
+    display: flex;
     align-items: center;
     justify-content: center;
     z-index: 10;
@@ -116,8 +116,8 @@ canvas {
     box-sizing: border-box;
 }
 
-.showSettings .modal-bg {
-    display: flex;
+.modal-bg.hidden {
+    display: none;
 }
 
 .modal {
