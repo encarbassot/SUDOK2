@@ -10,13 +10,14 @@ const errorSpan = document.getElementById("errorCount")
 const subNumBtn = document.getElementById("subNumbers")
 const difficultySpan = document.getElementById("difficulty")
 const settingsBtn = document.getElementById("settingsBtn")
-const closeSettings = document.getElementById("closeSettings")
+const modalSettings = document.getElementById("modalSettings")
 
 let sudoku = null
 let numSelected = null
 
 let startTimestamp = null
 let intervalId
+let elapsedBeforePause = 0
 
 const M = 3 // SUDOKU SPECIAL NUMBER
 const N = M*M // 9
@@ -71,20 +72,6 @@ cv.mouseClicked = function (e,mouseX,mouseY){
 //this triggers the signal to run setup and draw
 cv.start()
 
-
-
-function startTimer(){
-  if(intervalId) return
-  intervalId = setInterval(() => {
-    if(!startTimestamp) return
-    const elapsed = Date.now() - startTimestamp
-    const seconds = Math.floor(elapsed / 1000) % 60
-    const minutes = Math.floor(elapsed / 60000) % 60
-    const hours = Math.floor(elapsed / 3600000)
-    timerSpan.innerText = 
-      `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`
-  },1000)
-}
 
 
 async function fetchSudoku(){
@@ -154,10 +141,14 @@ subNumBtn.addEventListener("click",()=>{
 
 //settings modal
 settingsBtn.addEventListener("click",()=>{
-    document.body.classList.add("showSettings")
+    modalSettings.classList.remove("hidden")
 })
-closeSettings.addEventListener("click",()=>{
-    document.body.classList.remove("showSettings")
+
+Array.from(document.querySelectorAll(".modal-bg")).forEach(modal=>{
+    const btn = modal.querySelector(".closeModalBtn")
+    btn.addEventListener("click",()=>{
+        modal.classList.add("hidden")
+    })
 })
 
 // -------- BUTTONS COUNTERS --------
@@ -172,3 +163,39 @@ function updateCount(n, k) {
     }
   }
   
+
+
+
+  // --------- TIMER ---------
+  function startTimer(){
+    if(intervalId) return
+  
+    startTimestamp = Date.now() - (elapsedBeforePause || 0)
+  
+    intervalId = setInterval(() => {
+      if(!startTimestamp) return
+      const elapsed = Date.now() - startTimestamp
+      const seconds = Math.floor(elapsed / 1000) % 60
+      const minutes = Math.floor(elapsed / 60000) % 60
+      const hours = Math.floor(elapsed / 3600000)
+      timerSpan.innerText = 
+        `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`
+    },1000)
+  }
+  
+  function pauseTimer(){
+    if(!startTimestamp) return
+    elapsedBeforePause += Date.now() - startTimestamp
+    startTimestamp = null
+    clearInterval(intervalId)
+    intervalId = null
+  }
+  
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      pauseTimer()
+    } else {
+      startTimer()
+    }
+  })
