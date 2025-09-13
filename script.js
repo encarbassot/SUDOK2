@@ -11,6 +11,7 @@ const subNumBtn = document.getElementById("subNumbers")
 const difficultySpan = document.getElementById("difficulty")
 const settingsBtn = document.getElementById("settingsBtn")
 const modalSettings = document.getElementById("modalSettings")
+const fillAllSubBtn = document.getElementById("fillAllSubBtn")
 
 let sudoku = null
 let numSelected = null
@@ -86,6 +87,7 @@ async function fetchSudoku(){
     const {value, solution,difficulty} = data.newboard.grids[0]
 
     sudoku = new Sudoku(value, solution,N,M,W)
+    sudoku.fillSubnumbers()
     difficultySpan.innerText = difficulty
     // console.log(sudoku.solution)
 }
@@ -120,7 +122,7 @@ function selectNum(n){
     }
 }
 
-// -------- BIND BUTTONS --------
+// -------- BINDings BUTTONS --------
 numBtns.forEach((x,i)=>x.addEventListener("click",()=>{
     selectNum(i+1)
 }))
@@ -130,6 +132,11 @@ btnFullScreen.addEventListener("click", () => {
   } else {
     document.exitFullscreen()
   }
+})
+
+
+fillAllSubBtn.addEventListener("click",()=>{
+    sudoku.fillSubnumbers()
 })
 
 

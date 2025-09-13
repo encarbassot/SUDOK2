@@ -114,10 +114,19 @@ export default class Sudoku {
             if (subNumbers.includes(num)) {
               const subRow = Math.floor((num - 1) / 3) // 0..2
               const subCol = (num - 1) % 3             // 0..2
-              const subX = x + subCol * offset + offset * 0.3
-              const subY = y + subRow * offset + offset * 0.8
+              const subY = y + subRow * offset
+              const subX = x + subCol * offset
         
-              cv.text(num, subX, subY, subSize)
+        
+                
+              cv.fill("#000")
+              if(num === nSelected){
+                cv.rect(subX, subY , subSize,subSize)
+                cv.fill("#fff")
+              }
+
+
+              cv.text(num, subX +offset * 0.3, subY +offset * 0.8, subSize)
             }
           }
         } else {
@@ -320,8 +329,57 @@ export default class Sudoku {
       }
     }
   }
-  
-    
+
+
+
+fillSubnumbers(){
+  for(let i = 0; i < this.N; i++){
+    const row = this.board[i]
+    for(let j = 0; j < this.N; j++){
+      const n = row[j]
+      if(n !== 0) {
+        this.subNumbers[i][j] = [] // limpio si ya hay número
+        continue
+      }
+
+      // empezamos con todos los números posibles
+      const all = this.getNArr() // array con [1,2,...,N]
+
+      // fila
+      for(let c = 0; c < this.N; c++){
+        const val = this.board[i][c]
+        const idx = all.indexOf(val)
+        if(idx !== -1) all.splice(idx,1)
+      }
+
+      // columna
+      for(let r = 0; r < this.N; r++){
+        const val = this.board[r][j]
+        const idx = all.indexOf(val)
+        if(idx !== -1) all.splice(idx,1)
+      }
+
+      // subcuadro (MxM)
+      const startRow = Math.floor(i / this.M) * this.M
+      const startCol = Math.floor(j / this.M) * this.M
+      for(let r = startRow; r < startRow + this.M; r++){
+        for(let c = startCol; c < startCol + this.M; c++){
+          const val = this.board[r][c]
+          const idx = all.indexOf(val)
+          if(idx !== -1) all.splice(idx,1)
+        }
+      }
+
+      // asignar posibles números a la celda
+      this.subNumbers[i][j] = all
+    }
+  }
+}
+
+  getNArr(length=this.N){
+    return Array.from({length}).map((_,i)=>i+1)
+  }
+
 }
 
 
