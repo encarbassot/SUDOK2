@@ -153,12 +153,17 @@ settingsBtn.addEventListener("click",()=>{
     modalSettings.classList.remove("hidden")
 })
 
-Array.from(document.querySelectorAll(".modal-bg")).forEach(modal=>{
-    const btn = modal.querySelector(".closeModalBtn")
-    btn.addEventListener("click",()=>{
-        modal.classList.add("hidden")
-    })
+// Array.from(document.querySelectorAll(".modal-bg")).forEach(modal=>{
+//     const btn = modal.querySelector(".closeModalBtn")
+//     btn.addEventListener("click",()=>{
+//         modal.classList.add("hidden")
+//     })
+// })
+
+document.querySelector(".closeModalBtn").addEventListener("click",()=>{
+    modalSettings.classList.add("hidden")
 })
+
 
 // -------- BUTTONS COUNTERS --------
 function updateCount(n, k) {
