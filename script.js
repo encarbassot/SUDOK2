@@ -44,6 +44,8 @@ cv.draw = function (){
 }
 
 cv.mouseMoved = function (e,mouseX,mouseY){
+    if(!sudoku) return 
+
     const col = Math.floor(mouseX/W*N)
     const row = Math.floor(mouseY/W*N)
     sudoku.setHover(col,row)
@@ -87,7 +89,7 @@ async function fetchSudoku(){
     const {value, solution,difficulty} = data.newboard.grids[0]
 
     sudoku = new Sudoku(value, solution,N,M,W)
-    sudoku.fillSubnumbers()
+    // sudoku.fillSubnumbers()
     difficultySpan.innerText = difficulty
     // console.log(sudoku.solution)
 }
